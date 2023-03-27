@@ -22,15 +22,26 @@ enum instruction_type
 	J
 };
 
-std::array<std::string, 35> isa = \
+typedef struct s_isa
 {
-	"jal", "jalr", "beq", "bne", "blt",		// 0 - 4
-	"bge", "bltu", "bgeu", "lb", "lh",		// 5 - 9
-	"lw", "lbu", "lhu", "sb", "sh",			// 10 - 14
-	"sw", "addi", "slti", "sltiu", "xori",	// 15 - 19
-	"ori", "andi", "slli", "srli", "srai",	// 20 - 24
-	"add", "sub", "sll", "slt", "sltu",		// 25 - 29
-	"xor", "srl", "sra", "or", "and"		// 30 - 34
+	std::string ins_name;
+	std::string code;
+} t_isa;
+
+static std::vector<t_isa>	isa = \
+{
+	{"jal", ""},			{"jalr", "000"},		{"beq", "000"},
+	{"bne", "001"},			{"blt", "100"},			{"bge", "101"},
+	{"bltu", "110"},		{"bgeu", "111"},		{"lb", "000"},
+	{"lh", "001"},			{"lw", "010"},			{"lbu", "100"},
+	{"lhu", "101"},			{"sb", "000"},			{"sh", "001"},
+	{"sw", "010"},			{"addi", "000"},		{"slti", "010"},
+	{"sltiu", "011"},		{"xori", "100"},		{"ori", "110"},
+	{"andi", "111"},		{"slli", "0000000001"},	{"srli", "0000000101"},
+	{"srai", "0100000101"},	{"add", "0000000000"},	{"sub", "0100000000"},
+	{"sll", "0000000001"},	{"slt", "0000000010"},	{"sltu", "0000000011"},
+	{"xor", "0000000100"},	{"srl", "0000000101"},	{"sra", "0100000101"},
+	{"or", "0000000110"},	{"and", "0000000111"}
 };
 
 typedef struct s_instruction
@@ -43,6 +54,6 @@ typedef struct s_instruction
 } t_instruction;
 
 std::string toUnsignedBinaryString(const std::string& numberString, size_t size);
-void	generate_mc(t_instruction *ins);
+void		generate_mc(t_instruction *ins);
 
 #endif

@@ -30,9 +30,11 @@ int main(int argc, char **argv)
 	for (it = instructions.begin(); it != instructions.end(); it++)
 		mc_file << it->machine_code << std::endl;
 
+	/*
 	// Test purposes
 	for (it = instructions.begin(); it != instructions.end(); it++)
 		std::cout << it->type << " " << it->name << " " << it->args << std::endl;
+	*/
 
 	asm_file.close();
 	mc_file.close();
