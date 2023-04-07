@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 	if (asm_file.fail())
 		return (1);
 	mc_file.open("tests/machine_code_tests/" + \
-	std::string(argv[1]).substr(6, std::string(argv[1]).length() - 8) + "_bin",\
+	std::string(argv[1]).substr(6, std::string(argv[1]).length() - 8) + ".mem",\
 	std::ios::out | std::ios::trunc);
 
 	// Save t_instruction vector elements
