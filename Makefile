@@ -1,7 +1,7 @@
-NAME			=	RV32I_to_MC
+NAME			=	ASM_to_MC
 
 SRCS			=	main.cpp \
-					RV32I_C.cpp
+					ASM_to_MC.cpp
 
 OBJS			=	$(SRCS:.cpp=.o)
 

@@ -1,4 +1,4 @@
-#include "RV32I_C.hpp"
+#include "ASM_to_MC.hpp"
 
 s_instruction::s_instruction(const std::string &name, const std::string &args) \
 : name(name), args(args)

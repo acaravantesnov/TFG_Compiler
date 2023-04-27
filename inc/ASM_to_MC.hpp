@@ -50,7 +50,7 @@ typedef struct s_instruction
 	std::string				name;
 	std::string				args;
 	std::string				machine_code;
-	s_instruction(const std::string &, const std::string &);
+	s_instruction(const std::string &name, const std::string &args);
 } t_instruction;
 
 std::string toUnsignedBinaryString(const std::string& numberString, size_t size);
