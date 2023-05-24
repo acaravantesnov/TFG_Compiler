@@ -1,7 +1,9 @@
-NAME			=	ASM_to_MC
+NAME			=	asm_to_mc
 
 SRCS			=	main.cpp \
-					ASM_to_MC.cpp
+					./srcs/generate_mc.cpp \
+					./srcs/open_files.cpp \
+					./srcs/toUnsignedBinaryString.cpp
 
 OBJS			=	$(SRCS:.cpp=.o)
 
