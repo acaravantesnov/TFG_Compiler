@@ -1,4 +1,4 @@
-#include "../inc/asm_to_mc.hpp"
+#include "../inc/ASM_to_MC.hpp"
 
 std::string toUnsignedBinaryString(const std::string &numberString, size_t size)
 {

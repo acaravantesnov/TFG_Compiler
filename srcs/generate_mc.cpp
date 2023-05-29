@@ -1,9 +1,9 @@
-#include "../inc/asm_to_mc.hpp"
+#include "../inc/ASM_to_MC.hpp"
 
 void	generate_mc(t_instruction *ins)
 {
-	short							index_1, index_2;
-	std::string						rd, imm, pcrel_21, rs1, rs2, pcrel_13, shamt, csr, zimm;
+	short													index_1, index_2;
+	std::string										rd, imm, pcrel_21, rs1, rs2, pcrel_13, shamt, csr, rs1_or_zimm;
 	std::vector<t_isa>::iterator	it;
 
 	for (it = isa.begin(); it != isa.end(); it++)
@@ -18,6 +18,7 @@ void	generate_mc(t_instruction *ins)
 			if (rd[0] == 'x')
 				rd = rd.substr(1);
 			imm = ins->args.substr(index_1 + 2);
+			
 			ins->machine_code = toUnsignedBinaryString(imm, 20) + \
 			toUnsignedBinaryString(rd, 5);
 			if (ins->name == "lui")
@@ -31,8 +32,6 @@ void	generate_mc(t_instruction *ins)
 			if (rd[0] == 'x')
 				rd = rd.substr(1);
 			pcrel_21 = ins->args.substr(index_1 + 2);
-			if (pcrel_21[0] == 'x')
-				pcrel_21 = pcrel_21.substr(1);
 
 			ins->machine_code = (toUnsignedBinaryString(pcrel_21, 21))[0] + \
 			toUnsignedBinaryString(pcrel_21, 21).substr(10, 10) + \
@@ -47,13 +46,11 @@ void	generate_mc(t_instruction *ins)
 				rd = rd.substr(1);
 			index_2 = (ins->args.substr(index_1 + 1)).find('(');
 			imm = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
-			if (imm[0] == 'x')
-				imm = imm.substr(1);
 			rs1 = ins->args.substr(index_1 + index_2 + 3, \
 			ins->args.length() - (index_1 + index_2) - 4);
 			if (rs1[0] == 'x')
 				rs1 = rs1.substr(1);
-
+			
 			ins->machine_code = toUnsignedBinaryString(imm, 12) + \
 			toUnsignedBinaryString(rs1, 5) + isa[3].code.substr(7, 3) + \
 			toUnsignedBinaryString(rd, 5) + isa[3].code.substr(10);
@@ -68,112 +65,211 @@ void	generate_mc(t_instruction *ins)
 			if (rs2[0] == 'x')
 				rs2 = rs2.substr(1);
 			pcrel_13 = ins->args.substr(index_1 + index_2 + 3);
-			if (pcrel_13[0] == 'x')
-				pcrel_13 = pcrel_13.substr(1);
 
 			ins->machine_code = (toUnsignedBinaryString(pcrel_13, 13))[0] + \
-			(toUnsignedBinaryString(pcrel_13, 13)).substr(2, 6) + \
-			toUnsignedBinaryString(args[1], 5) + \
-			toUnsignedBinaryString(args[0], 5) + \
-			it->code + \
-			(toUnsignedBinaryString(args[2], 13)).substr(8, 4) + \
-			(toUnsignedBinaryString(args[2], 13))[1];
+			(toUnsignedBinaryString(pcrel_13, 13)).substr(2, 5) + \
+			toUnsignedBinaryString(rs2, 5) + \
+			toUnsignedBinaryString(rs1, 5);
+			
+			if (ins->name == "beq")
+				ins->machine_code += isa[4].code.substr(7, 3);
+			else if (ins->name == "bne")
+				ins->machine_code += isa[5].code.substr(7, 3);
+			else if (ins->name == "blt")
+	      ins->machine_code += isa[6].code.substr(7, 3);
+			else if (ins->name == "bge")
+  	    ins->machine_code += isa[7].code.substr(7, 3);
+			else if (ins->name == "bltu")
+    	  ins->machine_code += isa[8].code.substr(7, 3);
+			else if (ins->name == "bgeu")
+    		ins->machine_code += isa[9].code.substr(7, 3);
+
+			ins->machine_code += (toUnsignedBinaryString(pcrel_13, 13)).substr(8, 4) + \
+			(toUnsignedBinaryString(pcrel_13, 13))[1] + "1100011";
 			break;
 		case I_Loads:
 			index_1 = ins->args.find(',');
-			args[0] = ins->args.substr(0, index_1);
-			if (args[0][0] == 'x')
-				args[0] = args[0].substr(1);
+			rd = ins->args.substr(0, index_1);
+			if (rd[0] == 'x')
+				rd = rd.substr(1);
 			index_2 = (ins->args.substr(index_1 + 1)).find('(');
-			args[1] = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
-			if (args[1][0] == 'x')
-				args[1] = args[1].substr(1);
-			args[2] = ins->args.substr(index_1 + index_2 + 3, \
+			imm = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
+			rs1 = ins->args.substr(index_1 + index_2 + 3, \
 			ins->args.length() - (index_1 + index_2) - 4);
-			if (args[2][0] == 'x')
-				args[2] = args[2].substr(1);
+			if (rs1[0] == 'x')
+				rs1 = rs1.substr(1);
 
-			ins->machine_code = toUnsignedBinaryString(args[1], 12) + \
-			toUnsignedBinaryString(args[2], 5) + it->code + \
-			toUnsignedBinaryString(args[0], 5) + "0000011";
+			ins->machine_code = toUnsignedBinaryString(imm, 12) + \
+			toUnsignedBinaryString(rs1, 5);
+
+			if (ins->name == "lb")
+				ins->machine_code += isa[10].code.substr(7, 3);
+ 			else if (ins->name == "lh")
+ 				ins->machine_code += isa[11].code.substr(7, 3);
+ 			else if (ins->name == "lw")
+ 				ins->machine_code += isa[12].code.substr(7, 3);
+ 			else if (ins->name == "lbu")
+ 				ins->machine_code += isa[13].code.substr(7, 3);
+ 			else if (ins->name == "lhu")
+ 				ins->machine_code += isa[14].code.substr(7, 3);
+
+			ins->machine_code += toUnsignedBinaryString(rd, 5) + "0000011";
 			break;
 		case S:
 			index_1 = ins->args.find(',');
-			args[0] = ins->args.substr(0, index_1);
-			if (args[0][0] == 'x')
-				args[0] = args[0].substr(1);
+			rs2 = ins->args.substr(0, index_1);
+			if (rs2[0] == 'x')
+				rs2 = rs2.substr(1);
 			index_2 = (ins->args.substr(index_1 + 1)).find('(');
-			args[1] = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
-			if (args[1][0] == 'x')
-				args[1] = args[1].substr(1);
-			args[2] = ins->args.substr(index_1 + index_2 + 3, \
+			imm = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
+			rs1 = ins->args.substr(index_1 + index_2 + 3, \
 			ins->args.length() - (index_1 + index_2) - 4);
-			if (args[2][0] == 'x')
-				args[2] = args[2].substr(1);
+			if (rs1[0] == 'x')
+				rs1 = rs1.substr(1);
 
 			ins->machine_code = \
-			toUnsignedBinaryString(args[1], 12).substr(0, 7) + \
-			toUnsignedBinaryString(args[0], 5) + \
-			toUnsignedBinaryString(args[2], 5) + \
-			it->code + \
-			toUnsignedBinaryString(args[1], 12).substr(7) + "0100011";
+			toUnsignedBinaryString(imm, 12).substr(0, 7) + \
+			toUnsignedBinaryString(rs2, 5) + \
+			toUnsignedBinaryString(rs1, 5);
+
+			if (ins->name == "sb")
+ 				ins->machine_code += isa[15].code.substr(7, 3);
+ 			else if (ins->name == "sh")
+ 				ins->machine_code += isa[16].code.substr(7, 3);
+ 			else if (ins->name == "sw")
+ 				ins->machine_code += isa[17].code.substr(7, 3);
+
+			ins->machine_code += toUnsignedBinaryString(imm, 12).substr(7) + "0100011";
 			break;
 		case I:
 			index_1 = ins->args.find(',');
-			args[0] = ins->args.substr(0, index_1);
-			if (args[0][0] == 'x')
-				args[0] = args[0].substr(1);
+			rd = ins->args.substr(0, index_1);
+			if (rd[0] == 'x')
+				rd = rd.substr(1);
 			index_2 = (ins->args.substr(index_1 + 1)).find(',');
-			args[1] = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
-			if (args[1][0] == 'x')
-				args[1] = args[1].substr(1);
-			args[2] = ins->args.substr(index_1 + index_2 + 3);
-			if (args[2][0] == 'x')
-				args[2] = args[2].substr(1);
+			rs1 = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
+			if (rs1[0] == 'x')
+				rs1 = rs1.substr(1);
+			imm = ins->args.substr(index_1 + index_2 + 3);
 
-			ins->machine_code = toUnsignedBinaryString(args[2], 12) + \
-			toUnsignedBinaryString(args[1], 5) + it->code + \
-			toUnsignedBinaryString(args[0], 5) + "0010011";
+			ins->machine_code = toUnsignedBinaryString(imm, 12) + \
+			toUnsignedBinaryString(rs1, 5);
+			
+			if (ins->name == "addi")
+				ins->machine_code += isa[18].code.substr(7, 3);
+			else if (ins->name == "slti")
+ 				ins->machine_code += isa[19].code.substr(7, 3);
+ 			else if (ins->name == "sltiu")
+ 				ins->machine_code += isa[20].code.substr(7, 3);
+			else if (ins->name == "xori")
+				ins->machine_code += isa[21].code.substr(7, 3);
+			else if (ins->name == "ori")
+				ins->machine_code += isa[22].code.substr(7, 3);
+			else if (ins->name == "andi")
+				ins->machine_code += isa[23].code.substr(7, 3);
+
+			ins->machine_code += toUnsignedBinaryString(rd, 5) + "0010011";
 			break;
 		case I_Shifts:
 			index_1 = ins->args.find(',');
-			args[0] = ins->args.substr(0, index_1);
-			if (args[0][0] == 'x')
-				args[0] = args[0].substr(1);
+			rd = ins->args.substr(0, index_1);
+			if (rd[0] == 'x')
+				rd = rd.substr(1);
 			index_2 = (ins->args.substr(index_1 + 1)).find(',');
-			args[1] = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
-			if (args[1][0] == 'x')
-				args[1] = args[1].substr(1);
-			args[2] = ins->args.substr(index_1 + index_2 + 3);
-			if (args[2][0] == 'x')
-				args[2] = args[2].substr(1);
+			rs1 = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
+			if (rs1[0] == 'x')
+				rs1 = rs1.substr(1);
+			shamt = ins->args.substr(index_1 + index_2 + 3);
 
-			ins->machine_code = (it->code).substr(0, 7) + \
-			toUnsignedBinaryString(args[2], 5) + \
-			toUnsignedBinaryString(args[1], 5) + \
-			(it->code).substr(7) + toUnsignedBinaryString(args[0], 5) + \
-			"0010011";
+			if (ins->name == "srai")
+				ins->machine_code = "0100000";
+			else
+				ins->machine_code = "0000000";
+
+			ins->machine_code += toUnsignedBinaryString(shamt, 5) + \
+			toUnsignedBinaryString(rs1, 5);
+
+			if (ins->name == "slli")
+				ins->machine_code += "001";
+			else
+				ins->machine_code += "101";
+
+			ins->machine_code += toUnsignedBinaryString(rd, 5) + "0010011";
 			break;
 		case R:
 			index_1 = ins->args.find(',');
-			args[0] = ins->args.substr(0, index_1);
-			if (args[0][0] == 'x')
-				args[0] = args[0].substr(1);
+			rd = ins->args.substr(0, index_1);
+			if (rd[0] == 'x')
+				rd = rd.substr(1);
 			index_2 = (ins->args.substr(index_1 + 1)).find(',');
-			args[1] = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
-			if (args[1][0] == 'x')
-				args[1] = args[1].substr(1);
-			args[2] = ins->args.substr(index_1 + index_2 + 3);
-			if (args[2][0] == 'x')
-				args[2] = args[2].substr(1);
+			rs1 = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
+			if (rs1[0] == 'x')
+				rs1 = rs1.substr(1);
+			rs2 = ins->args.substr(index_1 + index_2 + 3);
+			if (rs2[0] == 'x')
+				rs2 = rs2.substr(1);
 
-			ins->machine_code = \
-			(it->code).substr(0, 7) + \
-			toUnsignedBinaryString(args[2], 5) + \
-			toUnsignedBinaryString(args[1], 5) + (it->code).substr(7) + \
-			toUnsignedBinaryString(args[0], 5) + "0110011";
+			if ((ins->name == "sub") || (ins->name == "sra"))
+				ins->machine_code = "0100000";
+			else
+				ins->machine_code = "0000000";
+
+			ins->machine_code += toUnsignedBinaryString(rs2, 5) + \
+			toUnsignedBinaryString(rs1, 5);
+
+			if (ins->name == "add")
+				ins->machine_code += isa[27].code.substr(7, 3);
+			else if (ins->name == "sub")
+				ins->machine_code += isa[28].code.substr(7, 3);
+			else if (ins->name == "sll")
+				ins->machine_code += isa[29].code.substr(7, 3);
+			else if (ins->name == "slt")
+				ins->machine_code += isa[30].code.substr(7, 3);
+			else if (ins->name == "sltu")
+				ins->machine_code += isa[31].code.substr(7, 3);
+			else if (ins->name == "xor")
+				ins->machine_code += isa[32].code.substr(7, 3);
+			else if (ins->name == "srl")
+				ins->machine_code += isa[33].code.substr(7, 3);
+			else if (ins->name == "sra")
+				ins->machine_code += isa[34].code.substr(7, 3);
+			else if (ins->name == "or")
+				ins->machine_code += isa[35].code.substr(7, 3);
+			else if (ins->name == "and")
+				ins->machine_code += isa[36].code.substr(7, 3);
+
+			ins->machine_code += toUnsignedBinaryString(rd, 5) + "0110011";
 			break;
 		case I_Atomic:
+			index_1 = ins->args.find(',');
+			rd = ins->args.substr(0, index_1);
+			if (rd[0] == 'x')
+				rd = rd.substr(1);
+			index_2 = (ins->args.substr(index_1 + 1)).find(',');
+			csr = ins->args.substr(index_1 + 2, index_2 - index_1 + 2);
+			if (csr[0] == 'x')
+				csr = csr.substr(1);
+			rs1_or_zimm = ins->args.substr(index_1 + index_2 + 3);
+			if (rs1_or_zimm[0] == 'x')
+				rs1_or_zimm = rs1_or_zimm.substr(1);
+
+			ins->machine_code = toUnsignedBinaryString(csr, 12) + \
+			toUnsignedBinaryString(rs1_or_zimm, 5);
+
+			if (ins->name == "csrrw")
+				ins->machine_code += isa[37].code.substr(7, 3);
+			else if (ins->name == "csrrs")
+				ins->machine_code += isa[38].code.substr(7, 3);
+			else if (ins->name == "csrrc")
+				ins->machine_code += isa[39].code.substr(7, 3);
+			else if (ins->name == "csrrwi")
+				ins->machine_code += isa[40].code.substr(7, 3);
+			else if (ins->name == "csrrsi")
+				ins->machine_code += isa[41].code.substr(7, 3);
+			else if (ins->name == "csrrci")
+				ins->machine_code += isa[42].code.substr(7, 3);
+
+			ins->machine_code += toUnsignedBinaryString(rd, 5) + "1110011";
 			break;
 		default:
 			break;

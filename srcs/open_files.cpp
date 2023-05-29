@@ -1,4 +1,4 @@
-#include "../inc/asm_to_mc.hpp"
+#include "../inc/ASM_to_MC.hpp"
 
 void open_files(char **argv, std::ifstream &asm_file, std::ofstream &mc_file)
 {
