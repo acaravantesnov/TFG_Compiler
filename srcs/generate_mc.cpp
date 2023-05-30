@@ -2,8 +2,8 @@
 
 void	generate_mc(t_instruction *ins)
 {
-	short													index_1, index_2;
-	std::string										rd, imm, pcrel_21, rs1, rs2, pcrel_13, shamt, csr, rs1_or_zimm;
+	short							index_1, index_2;
+	std::string						rd, imm, pcrel_21, rs1, rs2, pcrel_13, shamt, csr, rs1_or_zimm;
 	std::vector<t_isa>::iterator	it;
 
 	for (it = isa.begin(); it != isa.end(); it++)
@@ -19,8 +19,8 @@ void	generate_mc(t_instruction *ins)
 				rd = rd.substr(1);
 			imm = ins->args.substr(index_1 + 2);
 			
-			ins->machine_code = toUnsignedBinaryString(imm, 20) + \
-			toUnsignedBinaryString(rd, 5);
+			ins->machine_code = signed_to_binary(imm, 20) + \
+			signed_to_binary(rd, 5);
 			if (ins->name == "lui")
 				ins->machine_code += isa[0].code.substr(10);
 			else if (ins->name == "auipc")
@@ -33,11 +33,11 @@ void	generate_mc(t_instruction *ins)
 				rd = rd.substr(1);
 			pcrel_21 = ins->args.substr(index_1 + 2);
 
-			ins->machine_code = (toUnsignedBinaryString(pcrel_21, 21))[0] + \
-			toUnsignedBinaryString(pcrel_21, 21).substr(10, 10) + \
-			(toUnsignedBinaryString(pcrel_21, 21))[9] + \
-			toUnsignedBinaryString(pcrel_21, 21).substr(1, 8) + \
-			toUnsignedBinaryString(rd, 5) + isa[2].code.substr(10);
+			ins->machine_code = (signed_to_binary(pcrel_21, 21))[0] + \
+			signed_to_binary(pcrel_21, 21).substr(10, 10) + \
+			(signed_to_binary(pcrel_21, 21))[9] + \
+			signed_to_binary(pcrel_21, 21).substr(1, 8) + \
+			signed_to_binary(rd, 5) + isa[2].code.substr(10);
 			break;
 		case I_Jalr:
 			index_1 = ins->args.find(',');
@@ -51,9 +51,9 @@ void	generate_mc(t_instruction *ins)
 			if (rs1[0] == 'x')
 				rs1 = rs1.substr(1);
 			
-			ins->machine_code = toUnsignedBinaryString(imm, 12) + \
-			toUnsignedBinaryString(rs1, 5) + isa[3].code.substr(7, 3) + \
-			toUnsignedBinaryString(rd, 5) + isa[3].code.substr(10);
+			ins->machine_code = signed_to_binary(imm, 12) + \
+			signed_to_binary(rs1, 5) + isa[3].code.substr(7, 3) + \
+			signed_to_binary(rd, 5) + isa[3].code.substr(10);
 			break;
 		case B:
 			index_1 = ins->args.find(',');
@@ -66,26 +66,26 @@ void	generate_mc(t_instruction *ins)
 				rs2 = rs2.substr(1);
 			pcrel_13 = ins->args.substr(index_1 + index_2 + 3);
 
-			ins->machine_code = (toUnsignedBinaryString(pcrel_13, 13))[0] + \
-			(toUnsignedBinaryString(pcrel_13, 13)).substr(2, 5) + \
-			toUnsignedBinaryString(rs2, 5) + \
-			toUnsignedBinaryString(rs1, 5);
+			ins->machine_code = (signed_to_binary(pcrel_13, 13))[0] + \
+			(signed_to_binary(pcrel_13, 13)).substr(2, 6) + \
+			signed_to_binary(rs2, 5) + \
+			signed_to_binary(rs1, 5);
 			
 			if (ins->name == "beq")
 				ins->machine_code += isa[4].code.substr(7, 3);
 			else if (ins->name == "bne")
 				ins->machine_code += isa[5].code.substr(7, 3);
 			else if (ins->name == "blt")
-	      ins->machine_code += isa[6].code.substr(7, 3);
+	      		ins->machine_code += isa[6].code.substr(7, 3);
 			else if (ins->name == "bge")
-  	    ins->machine_code += isa[7].code.substr(7, 3);
+  	    		ins->machine_code += isa[7].code.substr(7, 3);
 			else if (ins->name == "bltu")
-    	  ins->machine_code += isa[8].code.substr(7, 3);
+    	  		ins->machine_code += isa[8].code.substr(7, 3);
 			else if (ins->name == "bgeu")
-    		ins->machine_code += isa[9].code.substr(7, 3);
+    			ins->machine_code += isa[9].code.substr(7, 3);
 
-			ins->machine_code += (toUnsignedBinaryString(pcrel_13, 13)).substr(8, 4) + \
-			(toUnsignedBinaryString(pcrel_13, 13))[1] + "1100011";
+			ins->machine_code += (signed_to_binary(pcrel_13, 13)).substr(8, 4) + \
+			(signed_to_binary(pcrel_13, 13))[1] + "1100011";
 			break;
 		case I_Loads:
 			index_1 = ins->args.find(',');
@@ -99,8 +99,8 @@ void	generate_mc(t_instruction *ins)
 			if (rs1[0] == 'x')
 				rs1 = rs1.substr(1);
 
-			ins->machine_code = toUnsignedBinaryString(imm, 12) + \
-			toUnsignedBinaryString(rs1, 5);
+			ins->machine_code = signed_to_binary(imm, 12) + \
+			signed_to_binary(rs1, 5);
 
 			if (ins->name == "lb")
 				ins->machine_code += isa[10].code.substr(7, 3);
@@ -113,7 +113,7 @@ void	generate_mc(t_instruction *ins)
  			else if (ins->name == "lhu")
  				ins->machine_code += isa[14].code.substr(7, 3);
 
-			ins->machine_code += toUnsignedBinaryString(rd, 5) + "0000011";
+			ins->machine_code += signed_to_binary(rd, 5) + "0000011";
 			break;
 		case S:
 			index_1 = ins->args.find(',');
@@ -128,9 +128,9 @@ void	generate_mc(t_instruction *ins)
 				rs1 = rs1.substr(1);
 
 			ins->machine_code = \
-			toUnsignedBinaryString(imm, 12).substr(0, 7) + \
-			toUnsignedBinaryString(rs2, 5) + \
-			toUnsignedBinaryString(rs1, 5);
+			signed_to_binary(imm, 12).substr(0, 7) + \
+			signed_to_binary(rs2, 5) + \
+			signed_to_binary(rs1, 5);
 
 			if (ins->name == "sb")
  				ins->machine_code += isa[15].code.substr(7, 3);
@@ -139,7 +139,7 @@ void	generate_mc(t_instruction *ins)
  			else if (ins->name == "sw")
  				ins->machine_code += isa[17].code.substr(7, 3);
 
-			ins->machine_code += toUnsignedBinaryString(imm, 12).substr(7) + "0100011";
+			ins->machine_code += signed_to_binary(imm, 12).substr(7) + "0100011";
 			break;
 		case I:
 			index_1 = ins->args.find(',');
@@ -152,8 +152,8 @@ void	generate_mc(t_instruction *ins)
 				rs1 = rs1.substr(1);
 			imm = ins->args.substr(index_1 + index_2 + 3);
 
-			ins->machine_code = toUnsignedBinaryString(imm, 12) + \
-			toUnsignedBinaryString(rs1, 5);
+			ins->machine_code = signed_to_binary(imm, 12) + \
+			signed_to_binary(rs1, 5);
 			
 			if (ins->name == "addi")
 				ins->machine_code += isa[18].code.substr(7, 3);
@@ -168,7 +168,7 @@ void	generate_mc(t_instruction *ins)
 			else if (ins->name == "andi")
 				ins->machine_code += isa[23].code.substr(7, 3);
 
-			ins->machine_code += toUnsignedBinaryString(rd, 5) + "0010011";
+			ins->machine_code += signed_to_binary(rd, 5) + "0010011";
 			break;
 		case I_Shifts:
 			index_1 = ins->args.find(',');
@@ -186,15 +186,15 @@ void	generate_mc(t_instruction *ins)
 			else
 				ins->machine_code = "0000000";
 
-			ins->machine_code += toUnsignedBinaryString(shamt, 5) + \
-			toUnsignedBinaryString(rs1, 5);
+			ins->machine_code += signed_to_binary(shamt, 5) + \
+			signed_to_binary(rs1, 5);
 
 			if (ins->name == "slli")
 				ins->machine_code += "001";
 			else
 				ins->machine_code += "101";
 
-			ins->machine_code += toUnsignedBinaryString(rd, 5) + "0010011";
+			ins->machine_code += signed_to_binary(rd, 5) + "0010011";
 			break;
 		case R:
 			index_1 = ins->args.find(',');
@@ -214,8 +214,8 @@ void	generate_mc(t_instruction *ins)
 			else
 				ins->machine_code = "0000000";
 
-			ins->machine_code += toUnsignedBinaryString(rs2, 5) + \
-			toUnsignedBinaryString(rs1, 5);
+			ins->machine_code += signed_to_binary(rs2, 5) + \
+			signed_to_binary(rs1, 5);
 
 			if (ins->name == "add")
 				ins->machine_code += isa[27].code.substr(7, 3);
@@ -238,7 +238,7 @@ void	generate_mc(t_instruction *ins)
 			else if (ins->name == "and")
 				ins->machine_code += isa[36].code.substr(7, 3);
 
-			ins->machine_code += toUnsignedBinaryString(rd, 5) + "0110011";
+			ins->machine_code += signed_to_binary(rd, 5) + "0110011";
 			break;
 		case I_Atomic:
 			index_1 = ins->args.find(',');
@@ -253,8 +253,8 @@ void	generate_mc(t_instruction *ins)
 			if (rs1_or_zimm[0] == 'x')
 				rs1_or_zimm = rs1_or_zimm.substr(1);
 
-			ins->machine_code = toUnsignedBinaryString(csr, 12) + \
-			toUnsignedBinaryString(rs1_or_zimm, 5);
+			ins->machine_code = signed_to_binary(csr, 12) + \
+			signed_to_binary(rs1_or_zimm, 5);
 
 			if (ins->name == "csrrw")
 				ins->machine_code += isa[37].code.substr(7, 3);
@@ -269,7 +269,7 @@ void	generate_mc(t_instruction *ins)
 			else if (ins->name == "csrrci")
 				ins->machine_code += isa[42].code.substr(7, 3);
 
-			ins->machine_code += toUnsignedBinaryString(rd, 5) + "1110011";
+			ins->machine_code += signed_to_binary(rd, 5) + "1110011";
 			break;
 		default:
 			break;

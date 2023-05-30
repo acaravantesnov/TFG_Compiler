@@ -106,6 +106,6 @@ typedef struct s_instruction
 
 void		open_files(char **argv, std::ifstream &asm_file, std::ofstream &mc_file);
 void		generate_mc(t_instruction *ins);
-std::string toUnsignedBinaryString(const std::string &numberString, size_t size);
+std::string	signed_to_binary(const std::string &numberString, int size);
 
 #endif
