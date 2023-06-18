@@ -5,4 +5,4 @@ sh x21, 2(x20)
 lw x22, 1(x20)
 srli x22, x22, 16
 sw x22, 0(x20)
-jal x23, -12
+jal x23, -16
