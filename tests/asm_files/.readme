@@ -51,3 +51,19 @@ Con addi y sb, cargar bit Enable y En_Interrupt del registro de Control del Time
 
 # FPGA_0.s
 
+1. Cargar en x20 la dirección de memoria del registro 0 del GPIO.
+2. Cargar en x21 el valor 10000000000000000.
+3. Restar 1 a x21 para obtener 1111111111111111 (para los 16 LSB de TRI para los LED).
+4. Guardar el valor 111111111111111 en TRI (registro 2 del GPIO).
+5. Añadir el valor 16 a x24.
+6. Cargar el valor del registro 1 del GPIO (datosIn) en el registro x22.
+6. Cargar el valor de x22 en datosOut del GPIO.
+7. Hacer bucle de instrucciones 5 y 6 saltando a la instrucción 5.
+
+No funciona.
+
+# Exception_1.s
+
+1. Número 42 a x7.
+2. Número 42 a x8. (Instrucción modificada para ser NVI).
+3. Número 42 a x9.
