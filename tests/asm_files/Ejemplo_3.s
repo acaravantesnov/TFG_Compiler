@@ -6,3 +6,4 @@ addi x7, x0, 255
 lui x20, 1
 sb x7, 2(x20)
 sb x18, 0(x20)
+lb x8, 0(x20)
